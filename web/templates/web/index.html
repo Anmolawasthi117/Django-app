@@ -1,0 +1,38 @@
+{% extends 'web/base.html' %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Places</h1>
+    
+    <div class="search-bar">
+        <form method="get" action="{% url 'index' %}">
+            <input type="text" name="name" placeholder="Search places..." value="{{ query }}">
+            <select name="min_rating">
+                <option value="">Min Rating</option>
+                <option value="1" {% if min_rating == "1" %}selected{% endif %}>1+</option>
+                <option value="2" {% if min_rating == "2" %}selected{% endif %}>2+</option>
+                <option value="3" {% if min_rating == "3" %}selected{% endif %}>3+</option>
+                <option value="4" {% if min_rating == "4" %}selected{% endif %}>4+</option>
+                <option value="5" {% if min_rating == "5" %}selected{% endif %}>5</option>
+            </select>
+            <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
+    </div>
+
+    <div class="places-grid">
+        {% for place in places %}
+        <a href="{% url 'place_detail' pk=place.pk %}" class="place-card-link">
+            <div class="place-card">
+                <h3>{{ place.name }}</h3>
+                <p class="address">{{ place.address }}</p>
+                <div class="rating">
+                    <span class="star">★</span> {{ place.average_rating|default:"0" }}
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <p>No places found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

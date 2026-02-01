@@ -1,0 +1,57 @@
+{% extends 'web/base.html' %}
+
+{% block content %}
+<div class="place-detail">
+    <div class="place-header">
+        <h1>{{ place.name }}</h1>
+        <p class="address">{{ place.address }}</p>
+        <div class="rating-large">
+            <span class="star">★</span> {{ avg_rating }}
+        </div>
+    </div>
+
+    <div class="reviews-section">
+        <div class="reviews-header">
+            <h2>Reviews</h2>
+            <!-- Simple Add Review Form Injection -->
+             <button onclick="document.getElementById('add-review-form').style.display='block'" class="btn btn-primary">Write a Review</button>
+        </div>
+
+        <div id="add-review-form" style="display:none; margin-bottom: 2rem; background: #f9f9f9; padding: 1rem; border-radius: 8px;">
+            <h3>Write a Review</h3>
+            <form action="{% url 'add_review' pk=place.pk %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Rating:</label>
+                    <input type="number" name="rating" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label>Review:</label>
+                    <textarea name="review_text" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <button type="button" class="btn btn-text" onclick="document.getElementById('add-review-form').style.display='none'">Cancel</button>
+            </form>
+        </div>
+
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-card {% if review.user == user %}my-review{% endif %}">
+                <div class="review-header">
+                    <span class="username">{{ review.user.name }}</span>
+                    <span class="date">{{ review.created_at|date:"M d, Y" }}</span>
+                </div>
+                <div class="review-rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </div>
+                <p class="review-text">{{ review.review_text }}</p>
+            </div>
+            {% empty %}
+            <p>No reviews yet. Be the first!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
